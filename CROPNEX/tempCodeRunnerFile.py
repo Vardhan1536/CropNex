@@ -1,0 +1,1 @@
+entity = sys.argv[1]

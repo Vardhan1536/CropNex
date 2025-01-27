@@ -1,0 +1,3 @@
+export const commodities = ['Wheat', 'Rice', 'Potatoes', 'Corn', 'Soybeans','atta','Gram', 'tur', 'urad', 'moong', 'masur','Groundnut oil', 'mustard oil', 'vanaspati', 'soya oil', 'sunflower oil', 'palm oil', 'Onion', 'Tomato','Sugar', 'gur', 'milk', 'tea', 'salt' ];
+export const regions = ['Madanapalle', 'Piler', 'Tirupati', 'Anantapur','Hindupur','Dharmavaram','Guntur','Bapatla','Mangalagiri','Ahmedabad'];
+export const radiusOptions = [5, 10, 15, 20, 25, 30, 50]; // in kilometers
