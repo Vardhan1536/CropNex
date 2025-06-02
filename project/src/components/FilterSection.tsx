@@ -22,7 +22,6 @@ const FilterSection = () => {
   const [predictions, setPredictions] = React.useState<MarketSuggestion[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const API_BASE_URL = import.meta.env.REACT_APP_API_URL;
   
   const handleSearch = async () => {
     const calculateDateDifference = (start: string, end: string): number => {
@@ -50,7 +49,7 @@ const FilterSection = () => {
     // });
 
     try{
-      const response = await fetch(`${API_BASE_URL}/suggest`,{
+      const response = await fetch(`https://cropnex.onrender.com/suggest`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

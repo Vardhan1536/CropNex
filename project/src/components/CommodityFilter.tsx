@@ -39,8 +39,6 @@ const CommodityFilter = () => {
   const [apiStartDate, setApiStartDate] = useState<string>('2024-12-19');
   const [isLoading, setIsLoading] = useState(false); // For loading state
 
-  const API_BASE_URL = import.meta.env.REACT_APP_API_URL;
-
   const calculateDateDifference = (start: string, end: string): number => {
     const startDateObj = new Date(start);
     const endDateObj = new Date(end);
@@ -64,7 +62,7 @@ const CommodityFilter = () => {
     const daysDifference = calculateDateDifference(fixedStartDateForApiCalc, endDate);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/predict`, {
+      const response = await fetch(`https://cropnex.onrender.com/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
