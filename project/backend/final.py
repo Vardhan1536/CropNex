@@ -31,7 +31,7 @@ warnings.filterwarnings("ignore", category=FutureWarning, message=".*torch.load.
 # 3. Now load the model
 print("Loading model and preprocessing data...")
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = torch.load('lstm_full_model.pth', map_location=device) # This should now work
+model = torch.load('lstm_full_model.pth', map_location=device, weights_only=False) # This should now work
 model.eval()
 
 df, features, entities, entity_groups, price_scaler, weather_scaler = preprocess_data()
@@ -64,7 +64,7 @@ class SuggestionRequest(BaseModel):
     
 @app.get("/")
 def root():
-    return {"message": "CropNex Prediction API is working sucessfully"}
+    return {"message": "CropNex Prediction API is working sucessfully"} 
 
 @app.post("/predict")
 def predict_endpoint(request: PredictionRequest): # Renamed to avoid potential conflict if you also have a 'predict' function
