@@ -2,3 +2,4 @@ node_modules
 lstm_attenttion_model_full.pth
 __pycache__
 env
+.env
