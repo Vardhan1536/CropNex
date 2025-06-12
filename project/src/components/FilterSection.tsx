@@ -40,7 +40,7 @@ const FilterSection = () => {
     // });
 
     try{
-      const response = await fetch(`http://127.0.0.1:8000/suggest`,{
+      const response = await fetch(`https://cropnex.onrender.com/suggest`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
