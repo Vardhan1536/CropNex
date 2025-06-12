@@ -101,13 +101,16 @@ const FilterSection = () => {
         {/* Market Input */}
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">Market</label>
-          <input
-            type="text"
-            value={selectedMarket}
-            onChange={(e) => setSelectedMarket(e.target.value)}
-            className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:border-green-500 focus:outline-none focus:ring-green-500"
-            placeholder="Current Market"
-          />
+          <select
+              value={selectedMarket}
+              onChange={(e) => setSelectedMarket(e.target.value)}
+              className="block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base focus:border-green-500 focus:outline-none focus:ring-green-500"
+            >
+              <option value="">Select Current Market</option>
+              {commodities.map((state) => (
+                <option key={state} value={state}>{state}</option>
+              ))}
+            </select>
         </div>
 
         {/* Region Dropdown */}

@@ -113,15 +113,13 @@ const CommodityFilter = () => {
         />
         <FilterSelect
           label="Market Location"
-          options={['Kurnool', 'Madanapalle', 'Hyderabad', 'Mangalagiri', 'Alur', 'Pattikonda']}
+          options={['Kurnool', 'Madanapalli','Alur', 'Pattikonda','Vayalapadu', 'Kalikir','Kuppam', 'Punganur', 'Palamaner','Bowenpally','Gudimalkapur','L B Nagar','Hyderabad (F&V)','Mahboob Manison','Mulakalacheruvu']}
           onChange={setMarket}
         />
         <FilterSelect
           label="Commodity"
           options={[
-            'Wheat', 'Rice', 'Corn', 'Soybean', 'Atta', 'Gram', 'Tur', 'Urad', 'Moong', 'Masur',
-            'Groundnut oil', 'Mustard oil', 'Vanaspati', 'Soya oil', 'Sunflower oil', 'Palm oil',
-            'Onion', 'Tomato', 'Sugar', 'Gur', 'Milk', 'Tea', 'Salt',
+            'Potato','Bitter gourd','Onion', 'Tomato', 'Dry Chillies'
           ]}
           onChange={setCommodity}
         />
