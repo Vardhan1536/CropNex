@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
 import DataTable from './DataTable';
 import PriceChart from './PriceChart';
 
@@ -34,17 +33,9 @@ const CommodityFilter = () => {
   const [market, setMarket] = useState('');
   const [state, setState] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState('');
   const [forecastData, setForecastData] = useState<number[] | null>(null);
-  // Assuming '2024-12-19' is the fixed start date for predictions that the chart/table will use.
-  const [apiStartDate, setApiStartDate] = useState<string>('2024-12-19');
-  const [isLoading, setIsLoading] = useState(false); // For loading state
-
-  const calculateDateDifference = (start: string, end: string): number => {
-    const startDateObj = new Date(start);
-    const endDateObj = new Date(end);
-    const timeDiff = endDateObj.getTime() - startDateObj.getTime();
-    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1;
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePredict = async () => {
     if (!commodity || !market || !state || !endDate) {
@@ -52,17 +43,19 @@ const CommodityFilter = () => {
       return;
     }
     setIsLoading(true);
-    setForecastData(null); // Clear previous data
+    setForecastData(null);
 
-    // This is the fixed start date from which 'num_days' is calculated for the API.
-    // It's also assumed to be the start date for the chart/table via `apiStartDate`.
-    const fixedStartDateForApiCalc = '2024-12-19';
-    setApiStartDate(fixedStartDateForApiCalc); // Explicitly set if it could ever change, though it's fixed here.
+    const today = new Date().toISOString().split('T')[0];
+    const startDatedefault = startDate.trim() === '' ? today : startDate;
+    if (new Date(startDatedefault) > new Date(endDate)) {
+      alert("End date must be after start date.");
+      setIsLoading(false);
+      return;
+    }
 
-    const daysDifference = calculateDateDifference(fixedStartDateForApiCalc, endDate);
-
+    // https://cropnex.onrender.com/predict
     try {
-      const response = await fetch(`https://cropnex.onrender.com/predict`, {
+      const response = await fetch(`http://127.0.0.1:8000/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,15 +64,15 @@ const CommodityFilter = () => {
           state: state,
           market: market,
           commodity: commodity,
-          num_days: daysDifference,
+          start_date: startDate,
+          end_date: endDate,
         }),
       });
 
-      const data = await response.json(); // Try to parse JSON regardless of response.ok for error messages
-
+      const data = await response.json();
       if (response.ok) {
         console.log("API Prediction data:", data.prediction);
-        setForecastData(data.prediction || []); // Ensure it's an array, even if API returns null for prediction
+        setForecastData(data.prediction || []);
       } else {
         alert(`Failed to fetch forecast data: ${data.detail || response.statusText}`);
         setForecastData(null);
@@ -133,32 +126,48 @@ const CommodityFilter = () => {
           onChange={setCommodity}
         />
       </div>
-      <div className="mt-8">
+
+      <div className="mt-8 flex flex-col md:flex-row gap-6">
+        {/* Start Date */}
         <div className="w-full">
-          <label className="block text-lg font-medium text-gray-800 mb-2">
-            Select End Date (Start date for prediction is fixed: 2024-12-19)
+          <label
+            htmlFor="start-date" 
+            className="block text-lg font-medium text-gray-800 mb-2"
+          >
+            Select Start Date
           </label>
           <input
+            id="start-date" 
             type="date"
-            min="2024-12-19"
-            className="w-full md:w-auto p-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-0 transition-colors text-gray-700"
+            className="w-full p-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-0 transition-colors text-gray-700"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        {/* End Date */}
+        <div className="w-full">
+          <label
+            htmlFor="end-date" 
+            className="block text-lg font-medium text-gray-800 mb-2"
+          >
+            Select End Date
+          </label>
+          <input
+            id="end-date" // <-- Accessibility Fix
+            type="date"
+            className="w-full p-3 bg-white border-2 border-gray-200 rounded-lg focus:border-green-500 focus:ring-0 transition-colors text-gray-700"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
       </div>
-      <div className="mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+
+      <div className="mt-10 flex flex md:flex-row  items-center ">
         <button
-          className="w-full md:w-auto flex items-center justify-center space-x-2 bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg"
-          // onClick={handleSearchMarkets} // You would need a separate handler for this
-        >
-          <Search className="h-5 w-5" />
-          <span>Search Markets</span>
-        </button>
-        <button
-          className="w-full md:w-auto bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg"
+          className="w-full md:w-auto bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg"
           onClick={handlePredict}
-          disabled={isLoading} // Disable button while loading
+          disabled={isLoading} 
         >
           {isLoading ? 'Predicting...' : 'Predict Prices'}
         </button>
@@ -166,24 +175,25 @@ const CommodityFilter = () => {
 
       {/* Consolidated section for displaying PriceChart, DataTable, or messages */}
       <div className="mt-12 space-y-8">
-        {forecastData && forecastData.length > 0 && apiStartDate ? (
+        {forecastData && forecastData.length > 0 && startDate ? (
           <>
             <DataTable
               predictedPrices={forecastData}
               market={market}
               region={state}
+              start_date={startDate}
               end_date={endDate} // Pass end_date if needed for DataTable
             />
-             <PriceChart
+            <PriceChart
               predictedPrices={forecastData}
-              startDate={apiStartDate}
+              startDate={startDate}
             />
           </>
         ) : (
-          dataDisplayMessage 
+          dataDisplayMessage
         )}
       </div>
-    </div> 
+    </div>
   );
 };
 

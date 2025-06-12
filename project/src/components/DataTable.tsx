@@ -4,11 +4,11 @@ interface DataTableProps {
   predictedPrices: number[];
   market: string;
   region: string;
-  // start_date: string; // Expecting start_date from props
+  start_date: string; // Expecting start_date from props
   end_date: string; // Not used in current rendering logic, but was in your interface
 }
 
-const DataTable: React.FC<DataTableProps> = ({ predictedPrices, market, region }) => {
+const DataTable: React.FC<DataTableProps> = ({ predictedPrices, market, region, start_date }) => {
   // Calculate approximate height for 5 rows + header.
   // Assuming each row is roughly 50-60px high and header is ~40px.
   // 5 rows * 60px/row + 40px header = 340px. Adjust this value as needed based on your styling.
@@ -47,10 +47,8 @@ const DataTable: React.FC<DataTableProps> = ({ predictedPrices, market, region }
           <tbody className="bg-white divide-y divide-gray-200">
             {predictedPrices && predictedPrices.length > 0 ? (
               predictedPrices.map((price, index) => {
-                const start_date = '2024-12-19'; // Hardcoded previously
                 const date = new Date(start_date); // Use start_date from props
                 date.setDate(date.getDate() + index);
-
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 const year = date.getFullYear();

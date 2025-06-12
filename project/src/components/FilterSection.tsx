@@ -24,21 +24,12 @@ const FilterSection = () => {
 
   
   const handleSearch = async () => {
-    const calculateDateDifference = (start: string, end: string): number => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const timeDiff = endDate.getTime() - startDate.getTime();
-    return Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1; // Convert ms to days
-  };
-
     if (!selectedCommodity || !selectedMarket || !selectedRadius || !startDate || !endDate) {
       alert('Please select all fields before searching.');
       return;
     }
     setIsLoading(true);
     setPredictions([]);
-
-    const daysDifference = calculateDateDifference(startDate, endDate);
 
     // console.log({
     //   selectedCommodity,
@@ -49,7 +40,7 @@ const FilterSection = () => {
     // });
 
     try{
-      const response = await fetch(`https://cropnex.onrender.com/suggest`,{
+      const response = await fetch(`http://127.0.0.1:8000/suggest`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +50,9 @@ const FilterSection = () => {
           market: selectedMarket,
           state : selectedState,
           radius: selectedRadius,
-          num_days: daysDifference, 
+          start_date : startDate,
+          end_date : endDate,
+
         }),
       })
       if (response.ok) {
@@ -74,11 +67,13 @@ const FilterSection = () => {
 
       } else {
         alert('Failed to fetch forecast data. Please try again.');
+        setIsLoading(false);
       }
     }
     catch (error) {
       console.error('Error fetching forecast data:', error);
       alert('An error occurred. Please try again later.');
+      setIsLoading(false);
     }
   };
 

@@ -1,11 +1,14 @@
-import sys  # Import the sys module
+from datetime import date
+import sys  
 import warnings
+import pandas as pd
 import torch
 from lstm import LSTMWithAttention  
-from preprocessing import preprocess_data
+from preprocessing import update_dataset_and_preprocess
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from predictions import predict_one_entity
+from preprocessing import load_and_process_for_api
 from market_suggest import get_market_suggestions
 from fastapi.middleware.cors import CORSMiddleware 
 
@@ -34,9 +37,24 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = torch.load('lstm_full_model.pth', map_location=device, weights_only=False) # This should now work
 model.eval()
 
-df, features, entities, entity_groups, price_scaler, weather_scaler = preprocess_data()
-print("Model and data loaded successfully.")
+# df, features, entities, entity_groups, price_scaler, weather_scaler = update_dataset_and_preprocess(model, device)
+# print("Model and data loaded successfully.")
 
+# results = update_dataset_and_preprocess(model, device, filepath="new_data.csv")
+results = load_and_process_for_api(filepath="new_data.csv")
+
+# Check if the function succeeded before unpacking
+if results:
+    # Unpack the results only if they are not None
+    df, features, entities, entity_groups, price_scaler, weather_scaler = results
+    
+    print("Data successfully loaded and processed. Starting application...")
+    # ... continue with your server logic (app.run, etc.) here ...
+    
+else:
+    # If results is None, the function failed. Stop the program.
+    print("FATAL: Data preprocessing failed. The application cannot start.")
+    
 app = FastAPI()
 
 origins = ["*"]
@@ -53,35 +71,45 @@ class PredictionRequest(BaseModel):
     state: str
     market: str
     commodity: str
-    num_days: int
+    start_date : date
+    end_date : date
+    # num_days: int
+    
     
 class SuggestionRequest(BaseModel):
     commodity: str
     market: str
     state: str
     radius: int
-    num_days: int
+    start_date : date
+    end_date : date
+    # num_days: int
     
 @app.get("/")
 def root():
     return {"message": "CropNex Prediction API is working sucessfully"} 
 
 @app.post("/predict")
-def predict_endpoint(request: PredictionRequest): # Renamed to avoid potential conflict if you also have a 'predict' function
+def predict_endpoint(request: PredictionRequest): 
     state = request.state
     market = request.market
     commodity = request.commodity
     entity = f"{state} | {market} | {commodity}"
-    num_days = request.num_days
+    start_date = request.start_date
+    end_date = request.end_date
+    num_days = len(pd.date_range(start=start_date, end=end_date, freq='D'))
     print(f"Received prediction request for entity: {entity} for {num_days} days.")
-    seq_length = 60  # Assuming this is a fixed parameter
+    seq_length = 60  
     try:
-        result = predict_one_entity(model, device, entity, entity_groups, features, seq_length, num_days, price_scaler, weather_scaler)
+        if entity not in entity_groups:
+            raise HTTPException(status_code=404, detail=f" No combination of State and Market exists, please check what you have entered and try again ")
+        
+        result = predict_one_entity(model, device, entity, entity_groups, features, seq_length, start_date, end_date, price_scaler, weather_scaler)
         print(f'Predictions for {entity} are: {result.tolist()}')
         return {"prediction": result.tolist()}
-    except ValueError as ve: # More specific error handling
+    except ValueError as ve: 
         print(f"ValueError during prediction: {ve}")
-        raise HTTPException(status_code=404, detail=str(ve)) # e.g. 404 if entity not found
+        raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
         import traceback
         print(f"Unhandled error during prediction: {e}")
@@ -97,16 +125,18 @@ def market_suggestions(request: SuggestionRequest):
         state = request.state  
         market = request.market
         radius = request.radius
-        num_days = request.num_days
+        start_date = request.start_date
+        end_date = request.end_date
         seq_length = 60
         entity = f"{state} | {market} | {commodity}"
+        num_days = len(pd.date_range(start=start_date, end=end_date, freq='D'))
         print(f"Received market suggestion request for entity: {entity} with radius {radius} km for {num_days} days.")
 
         if entity not in entity_groups:
             raise HTTPException(status_code=404, detail=f"Entity '{entity}' not found in database.")
 
         suggestions = get_market_suggestions(
-            entity, radius, num_days, model, device,
+            entity, radius, start_date, end_date, model, device,
             entity_groups, features, seq_length, price_scaler, weather_scaler
         )
 
