@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
-import { commodities, states, radiusOptions } from '../constants/filterOptions';
+import { commodities, states, radiusOptions, regions } from '../constants/filterOptions';
 import MarketTable from './MarketTable';
 import MarketComparisonChart from  './MarketComparisonChart';
 
@@ -107,7 +107,7 @@ const FilterSection = () => {
               className="block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base focus:border-green-500 focus:outline-none focus:ring-green-500"
             >
               <option value="">Select Current Market</option>
-              {commodities.map((state) => (
+              {regions.map((state) => (
                 <option key={state} value={state}>{state}</option>
               ))}
             </select>
