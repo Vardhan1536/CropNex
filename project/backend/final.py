@@ -148,12 +148,14 @@ def market_suggestions(request: SuggestionRequest):
             entity, radius, start_date, end_date, model, device,
             entity_groups, features, seq_length, price_scaler, weather_scaler
         )
-
-        if not suggestions:
-            return {"suggestions" : [{'status_code':200, 'message':'Your Market has the highest price for the commodity in selected radius'}]}
-
-        print(f"Suggestions received are: {suggestions}")
-        return {"suggestions": suggestions}
+    
+        if isinstance(suggestions, np.ndarray):
+            print(f"Suggestions received are: {suggestions}")
+            return {"suggestions": suggestions}
+        
+        elif isinstance(suggestions, str):
+            print(f"Prediction failed for {entity}: {suggestions}")
+            return {"suggestions":[{'message': suggestions }]}
 
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=f"Value error: {str(ve)}")
