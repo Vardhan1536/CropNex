@@ -32,7 +32,7 @@ const MarketTable: React.FC<MarketTableProps> = ({ Predictions }) => {
                 Your Area Price
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Predicted Price
+                Other Area Price
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Change (%)

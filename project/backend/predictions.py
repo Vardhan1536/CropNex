@@ -101,20 +101,31 @@ def get_predictions_for_entity_single(model, entity_name, entity_data, features,
     return predictions
 
 
+from datetime import date, datetime
+
 def predict_one_entity(model, device, entity, entity_groups, features, seq_length, start_date, end_date, price_scaler, weather_scaler):
     """
     Wrapper function to predict prices for a single entity by name.
     
+    Validates that the start date is not in the future and then proceeds with prediction.
+    
     Prerequisite: The DataFrames inside 'entity_groups' must have a DatetimeIndex.
     """
+    
+    try:
+        today = date.today()
+        if start_date > today:
+            return f"Error : The selected start date ({start_date}) is in the future, Price prediction requires historical data and cannot forecast for future start dates."
+            
+    except ValueError:
+        return f" Error : The start date '{start_date}' is not in the expected YYYY-MM-DD format."
     entity_name = entity
     entity_data = entity_groups.get(entity_name)
     
     if entity_data is None:
-        return f"Error: Entity '{entity_name}' not found in entity_groups."
+        return f"Error: Entity '{entity_name}' not found in the dataset."
         
-    # The weather_scaler is not passed down because it's assumed that the 
-    # 'entity_data' DataFrame is already pre-processed and scaled.
+        
     return get_predictions_for_entity_single(
         model=model, 
         entity_name=entity_name, 

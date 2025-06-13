@@ -36,14 +36,16 @@ const CommodityFilter = () => {
   const [startDate, setStartDate] = useState('');
   const [forecastData, setForecastData] = useState<number[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handlePredict = async () => {
     if (!commodity || !market || !state || !endDate) {
-      alert('Please select all fields including end date before predicting.');
+      setMessage('Please select all fields including the end date before predicting.');
       return;
     }
     setIsLoading(true);
     setForecastData(null);
+    setMessage('');
 
     const today = new Date().toISOString().split('T')[0];
     const startDatedefault = startDate.trim() === '' ? today : startDate;
@@ -55,7 +57,7 @@ const CommodityFilter = () => {
 
     // https://cropnex.onrender.com/predict
     try {
-      const response = await fetch(`https://cropnex.onrender.com/predict`, {
+      const response = await fetch(`http://127.0.0.1:8000/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,41 +70,33 @@ const CommodityFilter = () => {
           end_date: endDate,
         }),
       });
-
       const data = await response.json();
       if (response.ok) {
-        console.log("API Prediction data:", data.prediction);
-        setForecastData(data.prediction || []);
+        if (data.prediction && Array.isArray(data.prediction) && data.prediction[0]?.message) {
+          setMessage(data.prediction[0].message); 
+          setForecastData(null);
+        } else if (data.prediction) {
+          // This is the success case with actual data
+          setForecastData(data.prediction);
+          setMessage(''); 
+        } else {
+          setMessage('Received an unexpected response format from the server.');
+          setForecastData(null);
+        }
       } else {
-        alert(`Failed to fetch forecast data: ${data.detail || response.statusText}`);
+        const errorDetail = data.detail || response.statusText;
+        setMessage(`Failed to fetch forecast data: ${errorDetail}`);
         setForecastData(null);
-      }
-    } catch (error) {
+      }} catch (error) {
       console.error('Error fetching forecast data:', error);
-      alert('An error occurred while fetching forecast data. Please try again later.');
+      setMessage('An error occurred while fetching data. Please check the console and try again.');
       setForecastData(null);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Determine what message to show based on forecastData and isLoading
-  let dataDisplayMessage = null;
-  if (isLoading) {
-    dataDisplayMessage = <p className="text-gray-600 text-center py-8 text-lg">Loading predictions...</p>;
-  } else if (forecastData === null) {
-    dataDisplayMessage = (
-      <p className="text-gray-600 text-center py-8 text-lg">
-        Select commodity, market, state, and end date, then click "Predict Prices" to see the forecast.
-      </p>
-    );
-  } else if (forecastData.length === 0) {
-    dataDisplayMessage = (
-      <p className="text-gray-600 text-center py-8 text-lg">
-        No prediction data returned for the selected criteria.
-      </p>
-    );
-  }
+
   return (
     <div className="bg-gray-50 p-8 rounded-xl shadow-lg"> {/* Main container div */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -113,7 +107,7 @@ const CommodityFilter = () => {
         />
         <FilterSelect
           label="Market Location"
-          options={['Kurnool', 'Madanapalli','Alur', 'Pattikonda','Vayalapadu', 'Kalikir','Kuppam', 'Punganur', 'Palamaner','Bowenpally','Gudimalkapur','L B Nagar','Hyderabad (F&V)','Mahboob Manison','Mulakalacheruvu']}
+          options={['Kurnool', 'Madanapalli','Alur', 'Pattikonda','Vayalapadu', 'Kalikiri','Kuppam', 'Punganur', 'Palamaner','Bowenpally','Gudimalkapur','L B Nagar','Hyderabad (F&V)','Mahboob Manison','Mulakalacheruvu']}
           onChange={setMarket}
         />
         <FilterSelect
@@ -173,22 +167,37 @@ const CommodityFilter = () => {
 
       {/* Consolidated section for displaying PriceChart, DataTable, or messages */}
       <div className="mt-12 space-y-8">
-        {forecastData && forecastData.length > 0 && startDate ? (
+        {isLoading && (
+          <p className="text-gray-600 text-center py-8 text-lg">Loading predictions...</p>
+        )}
+
+        {/* Priority 1: Show the error/info message if it exists */}
+        {!isLoading && message && (
+          <p className="text-red-600 text-center py-8 text-lg font-semibold">{message}</p>
+        )}
+
+        {/* Priority 2: Show data if it exists AND there is NO message */}
+        {!isLoading && !message && forecastData && forecastData.length > 0 && (
           <>
             <DataTable
               predictedPrices={forecastData}
               market={market}
               region={state}
-              start_date={startDate}
-              end_date={endDate} // Pass end_date if needed for DataTable
+              start_date={startDate || new Date().toISOString().split('T')[0]}
+              end_date={endDate}
             />
             <PriceChart
               predictedPrices={forecastData}
-              startDate={startDate}
+              startDate={startDate || new Date().toISOString().split('T')[0]}
             />
           </>
-        ) : (
-          dataDisplayMessage
+        )}
+
+        {/* Priority 3: Fallback to initial prompt if no loading, no message, and no data */}
+        {!isLoading && !message && !forecastData && (
+          <p className="text-gray-600 text-center py-8 text-lg">
+            Select commodity, market, state, and end date, then click "Predict Prices" to see the forecast.
+          </p>
         )}
       </div>
     </div>

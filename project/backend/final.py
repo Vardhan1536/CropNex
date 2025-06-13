@@ -3,12 +3,13 @@ import sys
 import warnings
 import pandas as pd
 import torch
+import numpy as np
 from lstm import LSTMWithAttention  
 from preprocessing import update_dataset_and_preprocess
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from predictions import predict_one_entity
-from preprocessing import load_and_process_for_api
+from preprocessing  import load_and_process_for_api
 from market_suggest import get_market_suggestions
 from fastapi.middleware.cors import CORSMiddleware 
 
@@ -105,8 +106,16 @@ def predict_endpoint(request: PredictionRequest):
             raise HTTPException(status_code=404, detail=f" No combination of State and Market exists, please check what you have entered and try again ")
         
         result = predict_one_entity(model, device, entity, entity_groups, features, seq_length, start_date, end_date, price_scaler, weather_scaler)
-        print(f'Predictions for {entity} are: {result.tolist()}')
-        return {"prediction": result.tolist()}
+        
+        if isinstance(result, np.ndarray):
+            predictions_list = result.tolist()
+            print(f'Predictions for {entity} are: {predictions_list}')
+            return {"prediction": predictions_list}
+        
+        elif isinstance(result, str):
+            print(f"Prediction failed for {entity}: {result}")
+            return {"prediction":[{'status_code':200, 'message':result }]}
+               
     except ValueError as ve: 
         print(f"ValueError during prediction: {ve}")
         raise HTTPException(status_code=404, detail=str(ve))
@@ -141,7 +150,7 @@ def market_suggestions(request: SuggestionRequest):
         )
 
         if not suggestions:
-            raise HTTPException(status_code=204, detail="No market suggestions could be generated.")
+            return {"suggestions" : [{'status_code':200, 'message':'Your Market has the highest price for the commodity in selected radius'}]}
 
         print(f"Suggestions received are: {suggestions}")
         return {"suggestions": suggestions}
