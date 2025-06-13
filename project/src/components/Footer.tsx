@@ -27,10 +27,14 @@ const Footer = () => {
           </div>
           
           <div>
-            <h4 className="text-lg font-semibold mb-4">Contact</h4>
+            <h4 className="text-lg font-semibold mb-4">Team Optimuz</h4>
             <ul className="text-gray-400 space-y-2">
-              <li>Email: info@cropnex.com</li>
-              <li>Phone: +91 123 456 7890</li>
+              <li>Tanmayi Kona</li>
+              <li>Karthik Manuru</li>
+              <li>Diwakar Swarna</li>
+              <li>Nanda Kishore Kalavathula</li>
+              <li>Maruthi Kumar Gude</li>
+              <li>Balavardhan Tummalacherla</li>
             </ul>
           </div>
           

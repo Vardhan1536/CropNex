@@ -86,7 +86,7 @@ def get_market_suggestions(entity_str, radius_km, start_date, end_date, model, d
     # --- FIX 2: Handle case where no markets are found in the radius ---
     if not candidate_markets:
         print(f"No alternative markets found within {radius_km}km.")
-        return f"No other markets trading '{original_commodity}' were found within a {radius_km}km radius."
+        return f"No other recognisable markets trading '{original_commodity}' were found within a {radius_km}km radius."
 
     print(f"\nFound {len(candidate_markets)} potential markets. Comparing price predictions...")
 
