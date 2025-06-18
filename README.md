@@ -1,4 +1,5 @@
-![image](https://github.com/user-attachments/assets/912cd85a-38c3-46de-8bc7-d308f9b52f08)# Cropnex: AI-Powered LSTM Model for Commodity Price Prediction
+# Cropnex: AI-Powered LSTM Model for Commodity Price Prediction
+link for the website : https://cropnexbyoptimuz.onrender.com/
 
 ## Introduction
 
