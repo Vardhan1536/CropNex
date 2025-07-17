@@ -3,7 +3,7 @@ import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer id="contact" className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
@@ -29,12 +29,12 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Team Optimuz</h4>
             <ul className="text-gray-400 space-y-2">
-              <li>Tanmayi Kona</li>
-              <li>Karthik Manuru</li>
-              <li>Diwakar Swarna</li>
-              <li>Nanda Kishore Kalavathula</li>
-              <li>Maruthi Kumar Gude</li>
-              <li>Balavardhan Tummalacherla</li>
+              <li><a href='https://www.linkedin.com/in/tanmayi-kona-ab1248252' target='blank' >Tanmayi Kona</a></li>
+              <li><a href='https://www.linkedin.com/in/karthikmanuru' target='blank' >Karthik Manuru</a></li>
+              <li><a href='https://www.linkedin.com/in/diwakar-swarna' target='blank' >Diwakar Swarna</a></li>
+              <li><a href='https://www.linkedin.com/in/nandakishore-kalavathula-314307278' target='blank'>Nanda Kishore Kalavathula</a></li>
+              <li><a href='https://www.linkedin.com/in/gude-maruthi-kumar-16005b2b8' target='blank' >Maruthi Kumar Gude</a></li>
+              <li><a href='https://www.linkedin.com/in/vardhan1536' target='blank' >Balavardhan Tummalacherla</a></li>
             </ul>
           </div>
           
@@ -68,3 +68,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

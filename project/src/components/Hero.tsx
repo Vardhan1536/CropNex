@@ -2,6 +2,7 @@ import React from 'react';
 
 const Hero = () => {
   return (
+    <section id='home'>
     <div 
       className="relative h-screen bg-cover bg-center"
       style={{
@@ -20,6 +21,7 @@ const Hero = () => {
         </div>
       </div>
     </div>
+    </section>
   );
 };
 

@@ -109,7 +109,7 @@ const FilterSection = () => {
 const handleCloseModal = () => setIsModalOpen(false);
 
 return (
-  <div className="bg-white p-6 rounded-lg shadow-md mb-8 relative"> {/* Add relative positioning */}
+  <div id="services" className="bg-white p-6 rounded-lg shadow-md mb-8 relative"> {/* Add relative positioning */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* ... (All your form selects and inputs remain the same) ... */}
       <div className="space-y-2">
