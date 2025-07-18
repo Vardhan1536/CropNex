@@ -168,7 +168,7 @@ return (
 
     {/* --- 4. Updated Display Area --- */}
     <div className="mt-8 space-y-8">
-      {isLoading && <p className="text-center text-gray-600">Loading suggestions...</p>}
+      {isLoading && <p className="text-center text-gray-600">Loading suggestions... This might take a bit longer than usual, Please Wait</p>}
 
       {/* Show data if it exists */}
       {!isLoading && suggestionResult && suggestionResult.length > 0 && (

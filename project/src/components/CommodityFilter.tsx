@@ -184,7 +184,7 @@ const CommodityFilter = () => {
 
       <div className="mt-6 space-y-8">
         {isLoading && (
-          <p className="text-gray-600 text-center py-8 text-lg">Loading predictions...</p>
+          <p className="text-gray-600 text-center py-8 text-lg">Loading predictions... This might take a bit longer than usual, Please Wait</p>
         )}
 
         {/* --- SOLUTION 5: Update rendering logic to use the new state object --- */}
