@@ -26,7 +26,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          <div>
+          {/* <div>
             <h4 className="text-lg font-semibold mb-4">Team Optimuz</h4>
             <ul className="text-gray-400 space-y-2">
               <li><a href='https://www.linkedin.com/in/tanmayi-kona-ab1248252' target='blank' >Tanmayi Kona</a></li>
@@ -36,7 +36,7 @@ const Footer = () => {
               <li><a href='https://www.linkedin.com/in/gude-maruthi-kumar-16005b2b8' target='blank' >Maruthi Kumar Gude</a></li>
               <li><a href='https://www.linkedin.com/in/vardhan1536' target='blank' >Balavardhan Tummalacherla</a></li>
             </ul>
-          </div>
+          </div> */}
           
           <div>
             <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
