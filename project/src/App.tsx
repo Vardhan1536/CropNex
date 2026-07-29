@@ -24,7 +24,7 @@ function App() {
         </section>
         <PageTitle />
         <FilterSection />
-        <TipsSection />
+        {/* <TipsSection /> */}
         {/* <AboutUs /> */}
       </div>
       {/* <Footer /> */}
