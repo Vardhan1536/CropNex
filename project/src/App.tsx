@@ -25,9 +25,9 @@ function App() {
         <PageTitle />
         <FilterSection />
         <TipsSection />
-        <AboutUs />
+        {/* <AboutUs /> */}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
